@@ -1,0 +1,72 @@
+def heatmap(img_path):
+    img = image.load_img(img_path, target_size=(450,450))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)/255
+    preds = model.predict(x)
+    all_output = model.output[:,0]
+    last_conv_layer = model.get_layer('conv2d_17')
+    grads = K.gradients(all_output, last_conv_layer.output)[0]
+    pooled_grads = K.mean(grads, axis=(0,1,2))
+    iterate = K.function([model.input], [pooled_grads, last_conv_layer.output[0]])
+    pooled_grads_value, conv_layer_output_value = iterate([x])
+    for i in range(64): conv_layer_output_value[:,:,i] *= pooled_grads_value[i]
+    heatmap = np.mean(conv_layer_output_value, axis=-1)
+    heatmap = np.abs(heatmap)
+    heatmap = np.maximum(heatmap,0)
+    heatmap /= np.max(heatmap)
+    return heatmap
+
+# Example
+heat = heatmap('train/fold_1/all/UID_34_21_20_all.bmp')
+plt.matshow(heat)
+plt.axis('off')
+plt.show
+
+%matplotlib inline
+def heatmapfunction(i):
+    fig, ax = plt.subplots(1,4)
+    img1 = imread('train/fold_1/all/'+validation11_ids[i]).astype(np.uint8)
+    img2 = heatmap('train/fold_1/all/'+validation11_ids[i])
+    img3 = imread('train/fold_1/all/'+validation11_ids[i+1]).astype(np.uint8)
+    img4 = heatmap('train/fold_1/all/'+validation11_ids[i+1])
+    ax[0].imshow(img1)
+    ax[1].imshow(img2)
+    ax[2].imshow(img3)
+    ax[3].imshow(img4)
+
+# Example
+for i in range(10):
+    heatmapfunction(2*i+1)
+    
+    
+def NeuralNetPredict(model_dir, test20_dir, test21_dir):
+    test20_ids = next(os.walk(test20_dir))[2]
+    test21_ids = next(os.walk(test21_dir))[2]
+    len20 = 100 # Variable
+    len21 = 100 # Variable
+    model = load_model(model_dir)
+    print("__PathSetting_Done__")
+    img = np.zeros(((len20+len21),450,450,3))
+    for i in range(len20): img[i] = imread(test20_dir+'/'+test20_ids[i])/255
+    for i in range(len21): img[len20+i] = imread(test21_dir+'/'+test21_ids[i])/255
+    print("__ObjectSetting_Done__")
+    return model.predict(img)
+    
+def XGBoostPredict(model_dir, test20_dir, test21_dir):
+    test20_ids = next(os.walk(test20_dir))[2]
+    test21_ids = next(os.walk(test21_dir))[2]
+    len20 = 100 # Variable
+    len21 = 100 # Variable
+    print("__PathSetting_Done__")
+    #test0 = [{'Blue':imread(test20_dir+'/'+test20_ids[i])[:,:,2].sum()/(imread(test20_dir+'/'+test20_ids[i])>0).sum() , 'Size': (imread(test20_dir+'/'+test20_ids[i])>0).sum(), 'Outcome' : 0} for i in tqdm(range(len20))]
+    #test1 = [{'Blue':imread(test21_dir+'/'+test21_ids[i])[:,:,2].sum()/(imread(test21_dir+'/'+test21_ids[i])>0).sum() , 'Size': (imread(test21_dir+'/'+test21_ids[i])>0).sum(), 'Outcome' : 1} for i in tqdm(range(len21))]
+    #Update Necessary :)
+    test = test0 + test1
+    data_test = pd.DataFrame(test)
+    data_full = data_test.copy()
+    X_data = data_full.drop('Outcome', axis=1)
+    y = data_full.Outcome
+    print("__ObjectSetting_Done__")
+    model = pickle.load(open(model_dir, "rb"))
+    pred = model.predict(X_data)
+    return pred
