@@ -1,0 +1,18 @@
+# PathSetting
+train_dir = 'train/fold_0'
+validation_dir = 'train/fold_1'
+test_dir = 'train/fold_2'
+
+# ObjectSetting
+train00_ids = next(os.walk('train/fold_0/hem'))[2]
+train01_ids = next(os.walk('train/fold_0/all'))[2]
+validation10_ids = next(os.walk('train/fold_1/hem'))[2]
+validation11_ids = next(os.walk('train/fold_1/all'))[2]
+test20_ids = next(os.walk('train/fold_2/hem'))[2]
+test21_ids = next(os.walk('train/fold_2/all'))[2]
+len00 = len(train00_ids)
+len01 = len(train01_ids)
+len10 = len(validation10_ids)
+len11 = len(validation11_ids)
+len20 = len(test20_ids)
+len21 = len(test21_ids)
