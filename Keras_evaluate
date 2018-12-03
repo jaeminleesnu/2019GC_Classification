@@ -1,0 +1,17 @@
+print("-- Evaluate : validation set--")
+
+model = load_model('1203Grandchallenge6_1.h5')
+scores = model.evaluate_generator(
+            validation_generator, steps=40)
+
+print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
+
+
+
+
+print("-- Evaluate : test set --")
+model = load_model('1203Grandchallenge6_1.h5')
+scores = model.evaluate_generator(
+            test_generator, steps=40)
+
+print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
