@@ -1,0 +1,30 @@
+# It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
+
+seed = 7
+test_size = 0.2
+X_train, X_test, Y_train, Y_test = train_test_split(X_data, Y_data, test_size=test_size, random_state=seed)
+
+model1 = xgb.XGBClassifier()
+train_model1 = model1.fit(X_train, y_train)
+
+pickle.dump(model1, open("XGBoost" + date + ".dat", "wb")) # Save Model
+
+#Test set 
+pred1 = train_model1.predict(X_test)
+print('Model 1 XGboost Report %r' % (classification_report(Y_test, pred1)))
+print("Accuracy for model 1: %.2f" % (accuracy_score(Y_test, pred1) * 100))
+
+#Validation set
+predval1 = train_model1.predict(X_validation)
+print('Model 1 XGboost Report %r' % (classification_report(Y_validation, predval1)))
+print("Accuracy for model 1: %.2f" % (accuracy_score(Y_validation, predval1) * 100))
+
+
+# load model from file
+loaded_model = pickle.load(open("XGBoost" + date + ".dat", "rb"))
+# make predictions for test data
+#y_pred = loaded_model.predict(X_test)
+#predictions = [round(value) for value in y_pred]
+# evaluate predictions
+#accuracy = accuracy_score(y_test, predictions)
+#print("Accuracy: %.2f%%" % (accuracy * 100.0))
