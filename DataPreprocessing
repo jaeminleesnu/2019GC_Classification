@@ -1,0 +1,16 @@
+data0 = [{'Blue':imread('train/fold_0/hem/'+train00_ids[i])[:,:,2].sum()/(imread('train/fold_0/hem/'+train00_ids[i])>0).max(axis=2).sum(),
+          'Red':imread('train/fold_0/hem/'+train00_ids[i])[:,:,0].sum()/(imread('train/fold_0/hem/'+train00_ids[i])>0).max(axis=2).sum(),
+          'Green':imread('train/fold_0/hem/'+train00_ids[i])[:,:,1].sum()/(imread('train/fold_0/hem/'+train00_ids[i])>0).max(axis=2).sum(),
+          'Size': (imread('train/fold_0/hem/'+train00_ids[i])>0).max(axis=2).sum(), 'Outcome' : 0} for i in range(len00)]
+data1 = [{'Blue':imread('train/fold_0/all/'+train01_ids[i])[:,:,2].sum()/(imread('train/fold_0/all/'+train01_ids[i])>0).max(axis=2).sum(),
+          'Red':imread('train/fold_0/all/'+train01_ids[i])[:,:,0].sum()/(imread('train/fold_0/all/'+train01_ids[i])>0).max(axis=2).sum(),
+          'Green':imread('train/fold_0/all/'+train01_ids[i])[:,:,1].sum()/(imread('train/fold_0/all/'+train01_ids[i])>0).max(axis=2).sum(),
+          'Size': (imread('train/fold_0/all/'+train01_ids[i])>0).max(axis=2).sum(), 'Outcome' : 1} for i in range(len01)]
+data_train = data0 + data1
+table_train = pd.DataFrame(data_train)
+table_train.to_csv('train/train_dataframe' + date + '.csv') # Save Pandas to CSV 
+
+# Outcome to Y / Variables to X
+data_full = table_train.copy()
+X_data = data_full.drop('Outcome', axis=1)
+Y_data = data_full.Outcome
