@@ -16,3 +16,10 @@ len10 = len(validation10_ids)
 len11 = len(validation11_ids)
 len20 = len(test20_ids)
 len21 = len(test21_ids)
+
+# Size Setting
+img_height, img_width, img_channel = (450,450,3)
+# Set seed values
+seed = 42
+random.seed = seed
+np.random.seed(seed=seed)
